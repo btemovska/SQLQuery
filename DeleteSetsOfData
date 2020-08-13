@@ -1,0 +1,28 @@
+--DELETE delete values/rows. It is very simple but most dangerous
+
+--delete all rows
+DELETE FROM Bowlers;
+
+--delete some rows
+DELETE FROM Orders WHERE OrderTotal = 0;
+
+--delete customers who haven't placed an order
+DELETE FROM Customers WHERE CustomerID NOT IN (SELECT CustomerID FROM Orders);
+--delete vendors who do not provide any products
+DELETE FROM Vendors WHERE VendorID NOT IN (SELECT VendorID FROM Product_Vendors);
+--delete all entertainers who have never been hired
+DELETE FROM Entertainer_Members WHERE EntertainerID NOT IN (SELECT EntertainerID FROM Engagements);
+--delete all engagements thar have been copied to the archive table
+DELETE FROM Engagements WHERE EngagementID IN (SELECT EngagementID FROM Engagements_Archive);
+--delete all claseses that have never had student registered
+DELETE FROM Faculty_Classes WHERE ClassID NOT IN (SELECT ClassID FROM Student_Classes);
+DELETE FROM Classes WHERE ClassID NOT IN (SELECT ClassID FROM Student_Schedules);
+--delete bowlers who have not boweled any games
+DELETE FROM Bowlers WHERE BowlerGamesBowled = 0;
+DELETE FROM Bowlers WHERE BowlerID NOT IN (SELECT BowlerID FROM Bowler_Scores);
+DELETE FROM Teams WHERE TeamID NOT IN (SELECT TeamID FROM Bowlers);
+
+
+
+
+

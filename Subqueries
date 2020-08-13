@@ -1,0 +1,63 @@
+-- Subqueries is SELECT statment that you embed inside one of the clauses of SELECT statement to form your final query statement. 
+    -- there are:
+        --row subquery - it returns more than one column and no more than one row
+        --table subquery - returns one or more columns and zero to many rows
+        --scalar subquery - returns only one column and no more than one row
+        
+--ROW SUBQUERIES
+SELECT SKUClass, SKUNumber, ProductName FROM Products WHERE (SKUClass, SKUNumber) >= ('DSK', 9775);
+SELECT SKUCLass, SKUNumber, ProductName FROM Products WHERE (SKUClass > 'DSK') OR ((SKUClass = 'DSK') AND (SKUNumber >= 9775));
+
+--show me each order placed on 9/1/2012 and the customer last name
+SELECT Orders.OrderNumber, Orders.orderDate, Orders.ShipDate, (SELECT Customers.CustLastName FROM Customers
+WHERE Customers.CustomerID = Orders.CustomerID) AS CustLastName FROM Orders WHERE Orders.ShipDate = '9/1/2012';
+
+--list all customers and count of the orders they placed
+SELECT Customers.CustFirstName, Customers.CustLastName, (SELECT COUNT (*) FROM Orders 
+WHERE Orders.CustomerID = Customers.CustomerID) AS CountOfOrders FROM Customers;
+
+--list all customer and their last date of placing an order
+SELECT Customers.CustFirstName, Customers.CustLastName, (SELECT MAX (OrderDate) FROM Orders
+WHERE Orders.CustomerID = Customers.CustomerID) AS LastOrderDate FROM Customers;
+
+--list all customers and all details from their last order
+SELECT Customers.CustFirstName, Customers.CustLastName, Orders.OrderNumber, Orders.OrderDate,
+Order_Details.ProductNumber, Products.ProductName, Order_Details.Quantityordered 
+FROM ((Customers INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber = Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber = Order_Details.ProductNumber
+WHERE Orders.OrderDate = (SELECT MAX (OrderDate) FROM Orders WHERE CustomerID = Customers.CustomerID);
+
+--list all recipes that have seafood ingredients
+SELECT RecipeTitle FROM Recipes WHERE Recipes.RecipeID IN (SELECT RecipeID FROM Recipe_Ingredients 
+WHERE Recipe_Ingredients.IngredientID IN (SELECT IngredientID FROM Ingredients
+INNER JOIN Ingredient_Classes ON Ingredients.IngredientClassID = Ingredient_Classes.IngredientClassID
+WHERE Ingredient_Classes.IngredientClassDescription = 'Seafood'));
+
+--ALL, SOME, and ANY (these do not work in SQL)
+SELECT Recipes.RecipeTitle FROM Recipes WHERE Recipes.RecipeID IN (SELECT Recipe_Ingredients.RecipeID FROM Recipe_Ingredients
+WHERE Recipe_Ingredients.IngredientID = ANY (SELECT Ingredients.IngredientID FROM Ingredients WHERE Ingredients.IngredientName
+IN ('Beef', 'Garlic'));
+SELECT Products.ProductName, Products.RetailPrice FROM Products INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID
+WHERE Categories.CategoryDescription = 'Accessories' AND Products.RetailPrice > ALL (SELECT Products.RetailPrice FROM Products
+INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID WHERE Categories.CategoryDescription = 'Clothing');
+SELECT Customers.CustomerID, Customers.CustFirstName, Customers.CustLastName FROM Customers WHERE EXISTS 
+(SELECT * FROM (Orders INNER JOIN Order_Details ON Orders.OrderNumber = Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber = Order_Details.ProductNumber WHERE Products.CategoryID = 2
+AND Orders.CustomerID = Customers.CustomerID);
+
+SELECT VendName (SELECT COUNT(*) FROM Product_Vendors WHERE Product_Vendors.VendorID = Vendors.VendorID)
+AS VendProductCount FROM Vendors;
+
+SELECT Customers.CustFirstName, Customers.CustLastName, (SELECT MAX(StartDate) FROM Engagements
+WHERE Engagements.CustomerID = Customers.CustomerID) AS LastBooking FROM Customers;
+
+SELECT Subjects.SubjectName, (SELECT COUNT(*) FROM Classes WHERE MondaySchedule = 1 AND Classes.SubjectID = Subjects.SubjectID)
+AS MondayCount FROM Subjects;
+
+SELECT Bowlers.BowlerFirstName, Bowlers.BowlerLastName, (SELECT MAX (RawScore) FROM Bowler_Scores 
+WHERE Bowler_Scores.BowlerID = Bowlers.BowlerID) AS HighScore FROM Bowlers;
+
+SELECT Entertainers.EntertainerID, Entertainers.EntStageName FROM Entertainers WHERE Exists (SELECT * FROM Customers
+INNER JOIN Engagements ON Customers.CustomerID = Engagements.CustomerID WHERE Customers.CustLastName = 'Berg'
+AND Engagements.EntertainerID = Entertainers.EntertainerID);

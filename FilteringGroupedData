@@ -1,0 +1,48 @@
+--FilteringGroupedData with HAVING function (note it is not always wise to use HAVING, use WHERE is better bet)
+
+SELECT Staff.StfFirstName, Staff.StfLastName, COUNT(*) AS ClassCount FROM Staff
+INNER JOIN Faculty_Classes ON Staff.StaffID = Faculty_Classes.StaffID
+GROUP BY Staff.StfFirstName, Staff.StfLastname HAVING COUNT (*) <3;
+
+SELECT Bowlers.BowlerFirstName, Bowlers.BowlerLastName, 
+AVG(Bowler_Scores.RawScore) AS CurentAverage,
+MAX(Bowler_Scores.RawScore) AS HighGame
+FROM Bowlers INNER JOIN Bowler_Scores ON Bowlers.BowlerID = Bowler_Scores.BowlerID
+GROUP BY Bowlers.BowlerFirstName, Bowlers.BowlerLastName
+HAVING MAX (Bowler_Scores.RawScore) > (AVG(Bowler_Scores.RawScore)+20);
+
+--show me the entertainer groups that play in jazz style and have more than three members
+SELECT Entertainers.EntertainerID, Entertainers.EntStageName, Count(Entertainer_Members.EntertainerID) AS CountofEntertainerID
+FROM ((Entertainers INNER JOIN Entertainer_Members ON Entertainers.EntertainerID = Entertainer_Members.EntertainerID)
+INNER JOIN Entertainer_Styles ON Entertainers.EntertainerID = Entertainer_Styles.EntertainerID)
+INNER JOIN Musical_Styles ON Musical_Styles.StyleID = Entertainer_Styles.StyleID
+WHERE Musical_Styles.StyleName = 'Jazz' 
+GROUP BY Entertainers.EntertainerID, Entertainers.EntStageName
+HAVING Count (Entertainer_Members.EntertainerID) >3;
+
+SELECT Customers.CustState, SUM(Order_Details.QuantityOrdered * Order_Details.QuotedPrice) AS SumOfOrders
+FROM (Customers INNER JOIN Orders on Customers.CustomerID = Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber = Order_Details.OrderNumber
+WHERE Customers.CustState IN ('WA', 'OR', 'CA') 
+GROUP BY Customers.CustState
+HAVING SUM (Order_Details.QuantityOrdered * Order_Details.QuotedPrice) > 1000000;
+
+--show me the subject categories that have fewer than three full professors teaching that subject
+SELECT Categories.CategoryDescription, COUNT (Faculty_Categories.StaffID) AS ProfCount
+FROM (Categories INNER JOIN Faculty_Categories ON Categories.CategoryID = Faculty_Categories.CategoryID)
+INNER JOIN Faculty ON Faculty.StaffID = Faculty_Categories.StaffID
+WHERE Faculty.Title = 'Professor'
+GROUP BY Categories.CategoryDescription
+HAVING COUNT (Faculty_Categories.StaffID) <3;
+
+SELECT COUNT (Faculty.StaffID) AS BiologyProfessors FROM (Faculty
+INNER JOIN Faculty_Categories ON Faculty.StaffID = Faculty_Categories.StaffID)
+INNER JOIN Categories ON Categories.CategoryID = Faculty_Categories.CategoryID
+WHERE Categories.CategoryDescription = 'Biology' AND Faculty.Title = 'Professor';
+
+SELECT Customers.CustFirstName || ' ' || Customers.CustLastName AS CustFullName,
+Orders.OrderDate, SUM (Order_Details.QuotedPrice * Order_Details.QuantityOrdered) AS TotalCost
+FROM (Customers INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber = Order_Details.OrderNumber
+GROUP BY Customers.CustFirstName, Customers.CustLastName, Orders.OrderDate
+HAVING SUM(Order_Details.QuotedPrice * Order_Details.QuantityOrdered) >1000;

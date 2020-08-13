@@ -1,0 +1,97 @@
+--Simple Totals (COUNT, SUM, MIN, MAX)
+
+--COUNT (it is counting duplicate values as well as NULL values)
+SELECT COUNT (*) FROM Employees;
+SELECT COUNT (*) FROM Employees WHERE EmpState = 'WA';
+SELECT StudLastName, COUNT (*) AS CountofStudents FROM Students;
+SELECT 'The number of students is: ', COUNT(*) AS CountofStudents FROM Students;
+SELECT COUNT(CustCity) AS NumberOfKnownCountries FROM Customers;
+
+--use DISTINCT fundtion to eliminate duplicate values from the count
+SELECT COUNT(DISTINCT CustCity) AS NumberofUniqueCities FROM Customers WHERE CustState = 'OR';
+
+--SUM
+SELECT ProductNumber, SUM(QuantityOrdered) FROM Order_Details GROUP BY ProductNumber;
+SELECT SUM(RetailPrice * QuantityOnHand) AS TotalInventoryValue FROM Products;
+
+--AVG
+SELECT productName, AVG(QuantityOnHand) FROM Products GROUP BY ProductName;
+SELECT AVG(QuantityOrdered) FROM Order_Details WHERE OrderNumber = '64';
+SELECT AVG(DISTINCT RetailPrice) AS UniqueProductPrices FROM Products;
+
+--MAX (larges value)
+SELECT MAX(ContractPrice) AS LargestContractPrice FROM Engagements;
+SELECT MAX (QuotedPrice * QuantityOrdered) FROM Order_Details WHERE OrderNumber = '63';
+SELECT MAX(RetailPrice) AS MaximumPrice FROM Products;
+
+--MIN (smallest value)
+SELECT MIN(RetailPrice) AS LowestPrice FROM Products;
+SELECT MIN(QuotedPrice * QuantityOrdered) AS LowestItemTotal FROM order_Details WHERE OrderNumber = 8;
+
+--use more than one function
+SELECT MIN(ReviewDate) AS EarliestReviewDate, MAX(ReviewDate) AS RecentReviewDate FROM Employees WHERE Department = 'Advertising';
+
+SELECT COUNT(DISTINCT ProductNumber) AS TotalProductsPurchases, SUM (QuotedPrice * QuantityOrdered) AS OrderAmount
+FROM Order_Details WHERE OrderNumber = 553;
+
+--what engagements are greater than the average price
+SELECT EngagementNumber FrOM Engagements WHERE ContractPrice >= (SELECT AVG(ContractPrice) FROM Engagements);
+
+SELECT EngagementNumber, ContractPrice FROM Engagements WHERE ContractPrice >
+(SELECT SUM(ContractPrice) FROM Engagements WHERE StartDate BETWEEN '9/1/2000' AND '9/1/2020');
+
+
+--examples
+SELECT COUNT(*) AS NumberofCACustomers FROM Customers WHERE CustState = 'CA';
+--list the products that have price greater than or equal to overall average price
+SELECT DISTINCT Products.ProductName, Products.ProductNumber FROM Products
+INNER JOIN Order_Details ON Products.ProductNumber = Order_Details.ProductNumber
+WHERE Order_Details.QuantityOrdered >= (SELECT AVG(RetailPrice) FROM Products);
+--engagements that occur on the earlierst date
+SELECT EngagementNumber, ContractPrice FROM Engagements WHERE StartDate = (SELECT MIN(StartDate) FROM Engagements);
+--what is the total value of all engagements books in OCT 2012
+SELECT SUM(ContractPrice) AS TotalBookedValue FROM Engagements WHERE StartDate BETWEEN '10/1/2012' and '10/31/2012';
+--what is the largest salary we pay to any staff member
+SELECT MAX (Salary) AS LargestStaffSalary FROM Staff;
+--what is the total salary amount paid to our staff in California
+SELECT SUM(Salary) AS TotalStaffSalary FROM Staff WHERE StfState = 'CA';
+--how many tournaments have been played in Red Roster Lanes
+SELECT COUNT(TourneyLocation) AS NumberOfTournaments FROM Tournaments WHERE TourneyLocation = 'Red Rooster Lanes';
+--list bowlers in alphabetical order whoes personal average score is greater than or equal to the overall average score
+SELECT Bowlers.BowlerLastName, Bowlers.BowlerFirstName FROM Bowlers WHERE (SELECT AVG(RawScore)
+FROM Bowler_Scores AS BS WHERE BS.BowlerID = Bowlers.BowlerID) >= (SELECT AVG(RawScores) FROM Bowler_Scores)
+OrDER BY Bowlers.BowlerLastName, Bowlers.BowlerFirstName;
+--how many recipes contain beef as ingredient
+SELECT COUNT(*) AS NumberOfRecipes FROM Recipes WHERE Recipes.RecipeID IN (SELECT RecipeID FROM Recipe_Ingredients
+INNER JOIN Ingredients ON Recipe_Ingredients.IngredientID = Ingredients.IngredientID WHERE Ingredients.IngredientName LIKE 'Beef%');
+--how many ingredients are measured by the cup?
+SELECT COUNT(*) AS NumberOfIngredients FROM Ingredients INNER JOIN Measurements 
+ON Ingredients.MeasureAmountID = Measurements.MeasureAmountID WHERE MeasurementDescription = 'Cup';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

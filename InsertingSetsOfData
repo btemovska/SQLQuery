@@ -1,0 +1,30 @@
+--INSERT adding rows
+
+INSERT INTO Employees (EmpFirstName, EmpLastName, EmpStreetAddress, EmpCity, EmpState, EmpZipCode, EmpAreaCode, EmpPhoneNumber)
+VALUES ('Susan', 'Metters', '16547 NE 132nd St', 'Woodinville', 'WA', '98072', 425, '555-7825');
+--the following two will generate a new EmployeeID, system will generate it for us (but it does not work in this SQL)
+INSERT INTO Employees (EmpFirstName, EmpLastName, EmpStreetAddress, EmpCity, EmpState, EmpZipCode, EmpAreaCode, EmpPhoneNumber)
+VALUES (EmployeeID.NEXTVAL,'Biljana', 'Temovska', '317 Laurel Creek St', 'Pickerington', 'OH', '43147', 425, '555-5555');
+---OR can do it this way
+INSERT INTO Employees VALUES (EmployeeID.NEXTVAL,'Biljana', 'Temovska', '317 Laurel Creek St', 'Pickerington', 'OH', '43147', 425, '555-5555');
+--or can do it this way but again this SQL does not support it
+INSERT INTO Employees (EmpFirstName, EmpLastName, EmpStreetAddress, EmpCity, EmpState, EmpZipCode, EmpAreaCode, EmpPhoneNumber)
+VALUES ((SELECT MAX(EmployeeID) FROM Employees) + 1, 'Biljana', 'Temovska', '317 Laurel Creek St', 'Pickerington', 'OH', '43147', 425, '555-5555');
+
+--we hired someone that was a customer to us, so we have to copy customers information over to employee table
+INSERT INTO Employees (EmpFirstName, EmpLastName, EmpStreetAddress, EmpCity, EmpState, EmpZipCode, EmpAreaCode, EmpPhoneNumber)
+SELECT Customers.CustFirstName, Customers.CustLastName, Customers.CustStreetAddress, Customers.CustCity, Customers.CustState,
+Customers.CustZipCode, Customers.CustAreaCode, Customers.CustPhoneNumber FROM Customers 
+WHERE (Customers.CustFirstName = 'David') AND (Customers.CustLastName = 'Smith');
+
+INSERT INTO Vendors (VendName, VendStreetAddress, VendCity, VendState, VendZipCode, VendPhoneNumber, VendFaxNumber, VendWebPage, VendEmailAddress)
+VALUES ('Hot Dog Bikes', '1234 Maint Street', 'Chicago', 'IL', '60620', '(773) 555-6543', '(773) 555-6542', 
+'http://www.hotdogbikes.com/', 'Sales@hotdogsbikes.com');
+
+
+
+
+
+
+
+

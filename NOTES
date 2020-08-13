@@ -1,0 +1,79 @@
+SELECT * FROM
+
+--What is Database? A collection of related information
+--database can be stored on a paper, in your mind, on a computer
+--DMS = Database Managment System
+--CRUD = Create Read Update Delete (4 main operations)
+--Two types of Databases:
+--                    a) Relational Databases (SQL) - organize data in one or more tables, each tables have columns and rows
+--                    b) non-Relational (noSQL/not just SQL) = organize data is anything but a traditional table, aka document (xml, graphs, flexiable tabeles)
+--SQL = Structured Query Language
+--Database Queries - request made to DMS to give you an information
+--Foreign Key - is a special key allows us to link & relationships between two tables and more
+
+--SQL is hybrid language (4 types of languages in one)
+     --Data Query Language (DQL) - used to query the database for information. Get information that is already stored
+     --Data Definition Language (DDL) - used for defining database schemas
+     --Data Contol Language (DCL) - used for controling access to the data in the database aka used permission and management
+     -- Data Manipulation Language (DML) - used for inserting, updating and deleting from the database
+
+--Queries - set of instructions given to the RDBMS (relational database managment system) that tell the RDBMS what information you want to retreive for yoi
+--Tables are main structure in teh databases. Each table has primaty key that is uniquely identifies each of its records.
+
+--One to One Relationship - a single record from table A is related to only one record in table B
+--One to Many Relationship - a single ecord from table A is related to many records in table B
+--Many to Many Relationship - table A to table B to table C
+
+
+--- Select (column name) FROM (table name) WHERE (condition) GROUP BY (column name) HAVING (search condition)
+
+--DATA TYPES
+     --CHAR - character, this is the fixed length or defined length VARCHAR
+     --BLOB - Binary, Large objects, it stores pictures, images, sounds & videos
+     --INTEGER - exact whole number
+     --DECIMAL - decimal number
+     --FLOAT - Approximate numeric, stores numbers with decimal places & exponential numbers
+     --BOOLEAN - true of false values
+     --DATETIME - date, time and timestamp
+     --INTERVAL - stores qty of time between two datetime values
+     
+-- When typing a single string use single quotes. Ex 'this is an example of a string'
+
+-- When concatenating two columns you need ||. Ex. Column1 || ' ' || Column 2 ==> Column1 Column2
+
+--When using AS it means to switch the naming of the initial header for that column AS something else. Ex. Select FirstName || ' ' || LastName AS FullName
+
+-- COMPARISON 
+        -- = equal to
+        -- <> not equal to
+        -- < less than
+        -- > greater tan
+        -- <=less than or equal to
+        -- >= greater than or equal to    
+                --EXAMPLE -'Jack'
+-- BETWEEN (range) - range of values separated by AND
+                -- EXAMPLE - BETWEEN '6/1/2020' '7/1/2020'
+-- IN (Membership) - test if the value mathes in a given list
+                -- EXAMPLE - IN ('Ohio', 'Michigan', 'Kentucky')
+-- LIKE (Pattern Match) - test whether a character string matches a specified character string pattern
+        --'Sha%' -- begins with Sha
+        --'%son' -- ends with son
+        --'%han%' - must contain han
+    --Note Microsoft Access used * instead of %
+
+-- IS NULL - determine whether a value is Null.
+
+
+
+------Thinking in Sets - Comparing information from multiple tables-----
+    --INTERSECTION (INTERSECT) - what is common between both tables (A & B) 
+    -- DIFFERENCE (EXCEPT) - items that are in one table but not the other (A but not B)
+    -- UNION - combine to or more simmilar tables (either A or B) 
+           -- (it is simmilar to intersection, answers are combined from A & B and any duplicates are eliminated (showing 1 row instead of 2)
+   
+-- note not all SQL commercials support INTERSECT but here is an example (JOIN is the one that they use)
+-- note not all SQL commercials support EXCEPT but here is an example (OUTER JOIN is the one that they use)
+-- good news is that nearly all SQL commercials support UNION
+
+
+

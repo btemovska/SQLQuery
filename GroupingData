@@ -1,0 +1,58 @@
+--GROUP BY 
+    --note the INNER JOIN eliminates Null values, the OUTER JOIN will return those null
+
+--for each Enter. group show me count of contracts, total price, min price, max price, average price group it by group name
+SELECT Entertainers.EntStageName, Count(*) AS NumberOfContracts,
+SUM (Engagements.ContractPrice) AS TotalPrice,
+MIN (Engagements.ContractPrice) AS MinPrice,
+MAX (Engagements.ContractPrice) AS MaxPrice,
+AVG (Engagements.ContractPrice) AS AvgPrice FROM Entertainers 
+INNER JOIN Engagements ON Entertainers.EntertainerID = Engagements.EntertainerID GROUP BY Entertainers.EntStageName;
+
+--what about entertainers who have never been booked?
+SELECT Entertainers.EntStageName, Count(*) AS NumberOfContracts,
+SUM (Engagements.ContractPrice) AS TotalPrice,
+MIN (Engagements.ContractPrice) AS MinPrice,
+MAX (Engagements.ContractPrice) AS MaxPrice,
+AVG (Engagements.ContractPrice) AS AvgPrice FROM Entertainers 
+LEFT OUTER JOIN Engagements ON Entertainers.EntertainerID = Engagements.EntertainerID GROUP BY Entertainers.EntStageName;
+
+--examples
+--list all customers and their order date and show total price per day
+SELECT Customers.CustFirstName || ' ' || Customers.CustLastName AS CustFullName, Orders.OrderDate,
+SUM(Order_Details.QuotedPrice * Order_Details.QuantityOrdered) AS TotalCost FROM (Customers
+INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID) 
+INNER JOIN Order_Details ON Orders.OrderNumber = Order_Details.OrderNumber
+GROUP BY Customers.CustFirstName, Customers.CustLastName, Orders.OrderDate;
+
+--for completed classes list by category and student the category name, the student name, the stud average grade of all cases taken
+SELECT Categories.CategoryDescription, Students.StudFirstName, Students.StudLastName,
+AVG(Student_Schedules.Grade) AS AvgOfGrade FROM ((((Categories
+INNER JOIN Subjects ON Categories.CategoryID = Subjects.Category)
+INNER JOIN Classes ON Subjects.SubjectID = Classes.SubjectID)
+INNER JOIN Student_Schedules ON Classes.ClassID = Student_Schedules.ClassID)
+INNER JOIN Student_Class_Status ON Student_Class_Status.ClassStatus = Student_Schedules.ClassStatus)
+INNER JOIN Students ON Students.StudentID = Student_Schedules.StudentID
+WHERE Student_Class_Status.ClassStatusDescription = 'Completed'
+GROUP BY Categories.CategoryDescription, Students.StudFirstName, Students.StudLastName;
+
+SELECT Tournaments.TourneyID, Tournaments.TourneyLocation, Tourney_Matches.MatchID, Teams.TeamName,
+SUM(Bowler_Scores.HandiCapScore) AS TotalHandiCapScore FROM ((((Tournaments
+INNER JOIN Tourney_Matches ON Tournaments.TourneyID = Tourney_Matches.TourneyID)
+INNER JOIN Match_Games ON Tourney_Matches.MatchID = Match_Games.MatchID)
+INNER JOIN Bowler_Scores ON (Match_Games.MatchID = Bowler_Scores.MatchID) AND Match_Games.GameNumber = Bowler_Scores.GameNumber))
+INNER JOIN Bowlers ON Bowlers.BowlerID = Bowler_Scores.BowlerID
+INNER JOIN Teams ON Teams.TeamID = Bowlers.TeamID
+GROUP BY Tournaments.TourneyID, Tournaments.TourneyLocation, Tourney_Matches.MatchID, Teams.TeamName;
+
+--display the highest raw score for each bowler
+SELECT Bowlers.BowlerFirstName, Bowlers.BowlerLastName, MAX(Bowler_Scores.RawScore) AS HighScore FROM Bowlers
+INNER JOIN Bowler_Scores ON Bowlers.BowlerID = Bowler_Scores.BowlerID
+GROUP BY Bowlers.BowlerFirstName, Bowlers.BowlerLastName;
+
+--how many recipes exist for each class of ingredient
+SELECT Ingredient_Classes.IngredientClassDescription, Count(DISTINCT RecipeID) AS CountofRecipeID
+FROM (Ingredient_Classes INNER JOIN Ingredients ON Ingredient_Classes.IngredientClassID = Ingredients.IngredientClassID)
+INNER JOIN Recipe_Ingredients ON Ingredients.IngredientID = Recipe_Ingredients.IngredientID 
+GROUP BY Ingredient_Classes.IngredientClassDescription;
+

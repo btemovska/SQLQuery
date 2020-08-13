@@ -1,0 +1,131 @@
+--------------------------------BASIC QUERY--------------------------------------
+
+
+--note this will group & give you distinct individual cases
+SELECT DISTINCT EmpCity FROM Employees;
+
+SELECT VendName, VendZipCode FROM Vendors ORDER BY VendName;  --ASCENDING order
+SELECT VendName, VendZipCode FROM Vendors ORDER BY VendName DESC; -- DESCENDING order
+
+SELECT EmpLastName, EmpFirstName, EmpPhoneNumber FROM Employees ORDER BY EmpLastName, EmpFirstName;
+
+--ONLY in MICROSOFT ACCESS DATABASE SELECT TOP 5 ProductName, RetailPrice FROM Products ORDER BY Retail Price;
+
+--STRINGS
+SELECT VendWebPage, 'is the Website for', VendName FROM Vendors;
+
+--CONCATENATION
+SELECT EmpFirstName || ' ' || EmpLastName, 'Phone Number:' || EmpPhoneNumber FROM Employees;
+SELECT EmpFirstName || ' ' || EmpLastName AS EmployeeName, 'Phone Number:' || EmpPhoneNumber FROM Employees;   -- assign new name to any column using the AS clause
+SELECT 'The ID Number for ' || VendName || ' is ' || CAST(VendorID AS CHARACTER) FROM Vendors;  --it puts it in a sentance
+SELECT EmpFirstName || ' ' || EmpLastName, EmpPhoneNumber, EmpCity FROM Employees;  -- put together First Name & Last Name in one column
+
+SELECT EmpFirstName || ' ' || EmpLastName AS EmplyeeName, EmpPhoneNumber, EmpCity FROM Employees;  -- assign new name to any column using the AS clause
+SELECT EmpFirstName || ' ' || EmpLastName AS EmployeeName, EmpBirthDate AS DateOfBirth FROM Employees;  -- if you have a DOB column
+
+SELECT BowlerFirstName || ' ' || BowlerLastName AS FullName, BowlerAddress, BowlerCity || ', ' || BowlerState || ' ' || BowlerZip AS CityStateZip, BowlerZip FROM Bowlers Order By BowlerZip;
+
+--MATHematical Expressions
+SELECT AgtFirstName || ' ' || AgtLastName AS AgentName, Salary + (50000*CommissionRate) AS ProjectedIncome, Salary, CommissionRate FROM Agents;
+SELECT AgtFirstName || ' ' || AgtLastName || ' has projected income of ' || CAST (Salary+(50000*CommissionRate) AS CHARACTER) AS ProjectedIncome FROM Agents;
+SELECT ProductName, RetailPrice * QuantityOnHand AS InventoryValue FROM Products;
+SELECT EngagementNumber, ContractPrice, ContractPrice*0.12 AS OurFee, ContractPrice - (ContractPrice*0.12) AS NetAmount FROM Engagements;
+SELECT StfLastName || ', ' || StfFirstName AS STAFF, Salary, Salary*0.07 AS Bonus FROM Staff ORDER BY StfLastName;
+
+--DATE Expressions
+SELECT OrderNumber, ShipDate, OrderDate, CAST(OrderDate - ShipDate AS INTEGER) AS DaysToShip FROM Orders; --this would work if the Dates aren't dates
+SELECT EngagementNumber, CAST(CAST(EndDate - StartDate AS INTEGER) + 1 AS CHARACTER) || ' day(s)' AS DueToRun FROM Engagements;
+SELECT StfLastName || ' ' || StfFirstName AS Staff, DateHired, CAST(CAST('43934'- DateHired AS INTEGER) / 356 AS INTEGER) AS YearsWithSchool FROM Staff ORDER BY StfLastName, StfFirstName;
+
+--WHERE Clause (there are 18 predicates, but will show basic 5 (COMPARISON, BETWEEN, IN, LIKE, and IS NULL))
+SELECT * FROM Customers WHERE CustLastName ='Smith';
+SELECT CustFirstName, CustLastName FROM Customers WHERE CustState = 'WA';
+
+--COMPARISON (=, <>, <, >, <=, >=)
+SELECT AgtFirstName, AgtLastName FROM Agents WHERE DateHired = '5/15/1997';
+SELECT VendName, VendPhoneNumber FROM Vendors WHERE VendCity <> 'Bellevue';
+SELECT * FROM Orders WHERE ShipDate < OrderDate;
+SELECT * FROM CLasses WHERE Credits >4;
+SELECT EmpFirstName, EmpLastName FROM Employees WHERE EmpBirthDate >'11/2/1960';
+SELECT * FROM Products WHERE RetailPrice <='50';
+
+--RANGE--
+SELECT * FROM Agents WHERE DateHired BETWEEN '9/3/1997' AND '2/5/2000';
+SELECT StudFirstName, StudLastName, StudPhoneNumber FROM Students WHERE StudLastName BETWEEN 'B' AND 'G';
+SELECT * FROM Engagements WHERE '10/10/2020' BETWEEN StartDate AND EndDate;  -- this one is more complicated it says show me those scheduled to occur on OCT 10th
+
+--IN (Memebership)
+SELECT * FROM Tournaments WHERE TourneyDate IN ('10/16/2012', '10/2/2012', '10/23/2012');
+SELECT EntStageName, EntCity FROM Entertainers WHERE EntCity IN ('Seattle', 'Redmond', 'Auburn');
+
+--LIKE (Pattern Matching)
+SELECT CustFirstName, CustLastName FROM Customers WHERE CustFirstName LIKE 'Mar%';
+SELECT * FROM Vendors WHERE VendStreetAddress LIKE '%Ave%';
+
+--NULL - searching for Unknown Value
+SELECT BowlerFirstName || ' ' || BowlerLastName AS Bowler FROM Bowlers WHERE BowlerMiddleInit IS NULL;
+SELECT * FROM Vendors WHERE VendWebPage IS NULL;
+
+--NOT (NOT BETWEEN, NOT IN, IS NOT LIKE, IS NOT NULL)
+SELECT * FROM Orders WHERE OrderDate NOT BETWEEN '1/10/2013' AND '9/8/2012';
+SELECT StfFirstName || ' ' || StfLastname AS StaffName, Position FROM Staff WHERE Position IS NOT 'Faculty'; -- these two are same thing
+SELECT StfFirstName || ' ' || StfLastname AS StaffName, Position FROM Staff WHERE Position NOT IN ('Faculty'); -- these two are same thing
+SELECT BowlerFirstName || ' ' || BowlerLastName AS Bowler FROM Bowlers WHERE BowlerMiddleInit IS NOT NULL;
+
+--Using Multiple Conditions
+SELECT * FROM Customers WHERE CustState IN ('WA') AND CustLastName LIKE 'Vi%';   -- two conditions that are TRUE
+SELECT * FROM Customers WHERE CustCity = 'Portland' OR CustState = 'OR';  -- either this OR the other needs to be TRUE (at last one condition needs to be true)
+SELECT VendName, VendPhoneNumber FROM Vendors WHERE VendState = 'TX' OR 'NY';
+
+--Using AND and OR Together
+SELECT StfFirstName, StfLastName, StfAreaCode, StfPhoneNumber, DateHired FROM Staff WHERE (StfAreaCode = '425' AND StfPhoneNumber LIKE '555%') OR StfZipCode BETWEEN '98413' AND '77201';
+SELECT StfFirstName, StfLastName, Position, DateHired FROM Staff WHERE (Position = 'Faculty' OR Position = 'Secretary') AND StfAreaCode = '425';
+SELECT * FROM Tournaments WHERE TourneyLocation NOT IN ('Bolero Lanes', ' Imperial Lanes', ' Thunderburd Lanes');
+SELECT * FROM Bowlers WHERE BowlerCity NOT IN ('Bothell');
+
+--Order or Precedence
+SELECT * FROM Orders WHERE ShipDate = OrderDate AND CustomerID='1001';
+SELECT * FROM Orders WHERE CustomerID = '1001' OR ShipDate = OrderDate + 4;
+
+--Overlapping Ranges
+SELECT * FROM Orders WHERE OrderDate <= '1/13/2013' AND ShipDate >='1/1/2013';
+
+--Expressing Conditions in Different Ways
+SELECT * FROM Orders WHERE ShipDate >='10/1/2007' AND ShipDate <='10/31/2007';
+SELECT * FROM Orders WHERE ShipDate BETWEEN '10/1/2007' AND '10/31/2007';
+
+    --few practices
+SELECT * FROM Vendors WHERE VendState IN ('CA', 'WA', 'TX');
+SELECT * FROM Products WHERE ProductName LIKE 'Dog%' ORDER BY ProductName;
+SELECT * FROM Entertainers WHERE EntCity IN ('Bellevue', 'Redmond', 'Woodinville') ORDER BY EntStageName;
+SELECT * FROM Orders WHERE CAST (ShipDate - OrderDate AS INTEGER) = 2;
+SELECT * FROM Staff WHERE Salary BETWEEN '40000' AND '50000' ORDER BY StfFirstName, StfLastName;
+SELECT * FROM Students WHERE StudLastName = 'Kennedy' OR StudCity ='Seattle';
+Select * FROM Bowlers WHERE (TeamID IN (3,4,5)) OR BowlerLastName LIKE 'H%';
+SELECT * FROM Recipies WHERE NOTES IS NOT NULL;
+
+
+
+
+-------Thinking in Sets - Comparing information from multiple tables-----
+    --INTERSECTION (INTERSECT) - what is common between both tables (A & B) 
+    -- DIFFERENCE (EXCEPT) - items that are in one table but not the other (A but not B)
+    -- UNION - combine to or more simmilar tables (either A or B) 
+           -- (it is simmilar to intersection, answers are combined from A & B and any duplicates are eliminated (showing 1 row instead of 2)
+   
+-- note not all SQL commercials support INTERSECT but here is an example (JOIN is the one that they use)
+SELECT DISTINCT OrderNumber FROM Order_Details WHERE ProductNumber IN (1, 2, 6, 11)
+INTERSECT
+SELECT DISTINCT OrderNumber FROM Order_Details WHERE ProductNumber IN (10, 25, 26);  
+-- note not all SQL commercials support EXCEPT but here is an example (OUTER JOIN is the one that they use)
+SELECT DISTINCT OrderNumber FROM Order_Details WHERE ProductNumber IN (1, 2, 6, 11)
+EXCEPT
+SELECT DISTINCT OrderNumber FROM Order_Details WHERE ProductNumber IN (10, 25, 26);  
+-- good news is that nearly all SQL commercials support UNION
+SELECT DISTINCT OrderNumber FROM Order_Details WHERE ProductNumber IN (1, 2, 6, 11)
+UNION
+SELECT DISTINCT OrderNumber FROM Order_Details WHERE ProductNumber IN (10, 25, 26);  
+
+
+
+

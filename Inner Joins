@@ -1,0 +1,87 @@
+--INTERSECT involves matching all the columns in both result sets to get the answer
+--JOIN is ask your database to JOIN only on the columns you specify
+    --for example, JOIN to link customers to their orders by matching the customers to their orders by
+            --matching the CustomerID in the Customers table to the CustomerID in the Order table
+            
+-- INNER JOIN -- combines every row in the first table with every row in the second table (Cartesian product)
+SELECT * FROM Recipe_Classes INNER JOIN Recipes ON Recipe_Classes.RecipeClassID = Recipes.RecipeClassID;
+SELECT * FROM Recipe_Classes INNER JOIN Recipes USING (RecipeClassID); -- I LIKE THIS 
+SELECT * FROM Recipe_Classes, Recipes WHERE Recipe_Classes.RecipeClassID = Recipes.RecipeClassID;
+SELECT * FROM Recipe_Classes NATURAL INNER JOIN Recipes;
+
+--assigning correlation (alias)
+SELECT R.RecipeTitle, R.Preparation, RC.RecipeClassDescription FROM Recipe_Classes AS RC 
+INNER JOIN Recipes AS R ON RC.RecipeClassID = R.RecipeClassID;
+SELECT * FROM Recipe_Classes AS RC INNER JOIN Recipes AS R ON RC.RecipeClassID = R.RecipeClassID; -- shorter version from the one above
+
+--adding filters
+SELECT * FROM Recipe_Classes AS RC INNER JOIN Recipes AS R ON RC.RecipeClassID = R.RecipeClassID 
+WHERE RC.RecipeClassDescription = 'Main course' OR RC.RecipeClassDescription = 'Dessert';
+
+--multiple tables INNER JOINs
+--Embeded JOINs within JOINs + WHERE filter
+SELECT * FROM (((Recipe_Classes 
+INNER JOIN Recipes ON Recipe_Classes.RecipeClassID=Recipes.RecipeClassID)
+INNER JOIN Recipe_Ingredients ON Recipes.RecipeID=Recipe_Ingredients.RecipeID)
+INNER JOIN Ingredients ON Ingredients.IngredientID = Recipe_Ingredients.IngredientID)
+INNER JOIN Measurements ON Measurements.MeasureAmountID=Recipe_Ingredients.MeasureAmountID
+WHERE RecipeClassDescription ='Main course'
+ORDER BY RecipeTitle, RecipeSeqNo;
+
+SELECT * FROM Categories INNER JOIN Products ON Categories.CategoryID=ProductNumber;
+SELECT * FROM Entertainers INNER JOIN Engagements ON Entertainers.EntertainerID = Engagements.EntertainerID;
+SELECT DISTINCT Subjects.SubjectName, Classes.WednesdaySchedule 
+FROM Subjects INNER JOIN Classes ON Subjects.SubjectID = CLASSES.SubjectID WHERE Classes.WednesdaySchedule = 'TRUE';
+
+SELECT Teams.TeamName, (Bowlers.BowlerLastName || ' ' || Bowlers.BowlerFirstName) AS CaptainName
+FROM Teams INNER JOIN Bowlers ON Teams.CaptainID=Bowlers.BowlerID;
+
+SELECT DISTINCT Customers.CustFirstName, Customers.CustLastName, Products.ProductName FROM ((Customers
+INNER JOIN Orders On Customers.CustomerID = Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber=Order_Details.OrderNumber)
+INNER JOIN Products On Products.ProductNumber=Order_Details.ProductNumber
+WHERE Products.ProductName LIKE '%Helmet%';
+
+SELECT DISTINCT Entertainers.EntStageName FROM (Entertainers
+INNER JOIN Engagements ON Entertainers.EntertainerID=Engagements.EntertainerID)
+INNER JOIN Customers ON Customers.CustomerID=Engagements.CustomerID WHERE Customers.CustLastName='Berg';
+
+--a little too complex---
+SELECT Recipes.RecipeTitle, Ingredients.IngredientName, Measurements.MeasurementDescription, Recipe_Ingredients.Amount
+FROM (((Recipe_Classes
+INNER JOIN Recipes ON Recipes.RecipeClassID=Recipe_Classes.RecipeClassID)
+INNER JOIN Recipe_Ingredients ON Recipes.RecipeID=Recipe_Ingredients.RecipeID)
+INNER JOIN Ingredients ON Ingredients.IngredientID=Recipe_Ingredients.IngredientID)
+INNER JOIN Measurements ON Measurements.MeasureAmountID=Recipe_Ingredients.MeasureAmountID
+WHERE Recipe_Classes.RecipeClassDescription='Main course';
+
+--way too complex--
+SELECT CustBikes.CustFirstName, CustBikes.CustLastName FROM (SELECT DISTINCT Customers.CustomerID,
+Customers.CustFirstName, Customers.CustLastName FROM ((Customers
+INNER JOIN Orders ON Customers.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber=Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber = Order_Details.ProductNumber
+WHERE Products.ProductName LIKE '%Bike') AS CustBikes
+INNER JOIN (SELECT DISTINCT Customers.CustomerID FROM ((Customers
+INNER JOIN Orders ON Customers.CustomerID=Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber=Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber=Order_Details.ProductNumber
+WHERE Products.ProductName LIKE '%Helmet') AS CustHelmets
+ON CustBikes.CustomerID=CustHelmets.CustomerID;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

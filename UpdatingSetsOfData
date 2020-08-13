@@ -1,0 +1,34 @@
+----Updating Sets of Data - UPDATE statment allows you to change the value in one or more columns and in one or more rows
+
+--change products by increasing the retail price by 10%
+UPDATE Products SET RetailPrice = RetailPrice + (0.1 * RetailPrice);
+UPDATE Products SET RetailPrice = RetailPrice * 1.04 WHERE CategoryID = 3;
+
+UPDATE Order_Details SET QuotedPrice = QuotedPrice * 0.98 WHERE OrderID IN 
+(SELECT OderID FROM Orders WHERE ShipDate - OrderDate) > 30);
+
+UPDATE Students SET Students.StudAreaCode = '360' WHERE Students.StudZipCode IN ('98270', '98271');
+
+--you can pull the results down first, look at them and if satisfied you can change the SELECT into UPDA syntax
+SELECT ProductName, RetailPrice, RetailPrice * 1.04 AS NewPrice FROM Products WHERE CategoryID = 3;
+
+--updating multiple tables
+UPDATE Classes SET ClassRoomID = 1635, MondaySchedule = 0, WednesdaySchedule = 0, 
+FridaySchedule = 0, TuesdaySchedule = 1, ThursdaySchedule= 1, SaturdaySchedule = 1 WHERE SubjectID = 13;
+
+UPDATE Classes SET ClassRoomID = 1635, MondaySchedule = 0, WednesdaySchedule = 0, 
+FridaySchedule = 0, TuesdaySchedule = 1, ThursdaySchedule= 1, SaturdaySchedule = 1 WHERE SubjectID IN
+(SELECT SubjectID FROM Subjects WHERE SubjectName = 'Drawing');
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,79 @@
+--UNIONs lets you select the rows from two or more similar result sets and comine them into single result set (ROWs, not columns)
+    -- you comnine all rows from table A and all rows from table B that are compatable even thought the two might have nothing
+        --to do with each other
+SELECT Customers.CustLastName || ' ' || Customers.CustFirstName AS MailingName,
+Customers.CustStreetAddress, Customers.CustCity, Customers.CustState, Customers.CustZipCode
+FROM Customers UNION SELECT Vendors.VendName, Vendors.VendStreetAddress, Vendors.VendCity,
+Vendors.VendState, Vendors.VendZipCode FROM Vendors;
+
+--combine list of all Agents and Entertainers
+SELECT Agents.AgtLastName || ' ' || Agents.AgtFirstName AS Name, 'Agent' AS Type
+FROM Agents UNION SELECT Entertainers.EntStageName, 'Entertainer' AS Type FROM Entertainers;
+
+--list customers and the bikes they ordered combined with Vendors and bikes they sell
+SELECT Customers.CustLastName || ' ' || Customers.CustFirstName AS FullName, Products.ProductName, 'Customers' AS RowID
+FROM ((Customers INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber = Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber=Order_Details.ProductNumber
+WHERE Products.ProductName LIKE '%bike%' UNION SELECT Vendors.VendName, Products.ProductName, 'Vendor' AS RowID
+FROM (Vendors INNER JOIN Product_Vendors ON Vendors.VendorID=Product_Vendors.VendorID)
+INNER JOIN Products ON Products.ProductNumber=Product_Vendors.ProductNumber
+WHERE Products.ProductName LIKE '%bike%';
+
+--create a single mailing list for customers, employees and vendors
+SELECT Customers.CustFirstName || ' ' || Customers.CustLastName AS CustFullName, 
+Customers.CustStreetAddress, Customers.CustCity, Customers.CustState, Customers.CustZipCode FROM Customers
+UNION
+SELECT Vendors.VendName, Vendors.VendStreetAddress, Vendors.VendCity, Vendors.VendState, Vendors.VendZipCode FROM Vendors;
+
+SELECT Customers.CustFirstName || ' ' || Customers.CustLastName AS CustFullName, Customers.CustStreetAddress, 
+Customers.CustCity,Customers.CustState, Customers.CustZipCode FROM Customers UNION
+SELECT Employees.EmpFirstName || ' ' || Employees.EmpLastName AS EmpFullName, Employees.EmpStreetAddress, 
+Employees.EmpCity, Employees.EmpState, Employees.EmpZipCode FROM Employees UNION
+Select Vendors.VendName, Vendors.VendStreetAddress, Vendors.VendCity, Vendors.VendState, Vendors.VendZipCode FROM Vendors ORDER BY CustZipCode;
+
+--samples
+SELECT Customers.CustFirstName, Customers.CustLastName, Customers.CustStreetAddress, Customers.CustCity, 
+Customers.CustState, Customers.CustZipCode FROm Customers
+UNION ALL
+SELECT Employees.EmpFirstName, Employees.EmpLastName, Employees.EmpStreetAddress, Employees.EmpCity,
+Employees.EmpState, Employees.EmpZipCode FROM Employees ORDER BY CustZipCode;
+
+--list all customers who ordered a bike combined with all customers who ordered a helmet
+SELECT Customers.CustFirstName, Customers.CustLastName, 'Bike' AS ProdType 
+FROM ((Customers INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber = Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber = Order_Details.ProductNumber WHERE
+Products.ProductName LIKE '%bike%' UNION
+SELECT Customers.CustFirstName, Customers.CustLastName, 'Helmet' AS ProdType
+FROM ((Customers INNER JOIN Orders ON Customers.CustomerID=Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber=Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber = Order_Details.ProductNumber WHERE
+Products.ProductName LIKE '%helmet%';
+ --same as the one above but using DISTINCT to eliminate duplicates
+SELECT DISTINCT Customers.CustFirstName, Customers.CustLastName
+FROM ((Customers INNER JOIN Orders ON Customers.CustomerID=Orders.CustomerID)
+INNER JOIN Order_Details ON Orders.OrderNumber=Order_Details.OrderNumber)
+INNER JOIN Products ON Products.ProductNumber=Order_Details.ProductNumber
+WHERE Products.ProductName LIKE '%bike%' OR Products.ProductName LIKE '%helmet%';
+
+SELECT Tournaments.TourneyLocation, Tournaments.TourneyDate, Tourney_Matches.MatchID, Teams.TeamName,
+Bowlers.BowlerLastName || ' ' || Bowlers.BowlerFirstName AS Captain, 'Odd Lane' AS Lane
+FROM ((Tournaments INNER JOIN Tourney_Matches ON Tournaments.TourneyID=Tourney_Matches.TourneyID)
+INNER JOIN Teams ON Teams.TeamID=Tourney_Matches.OddLaneTeamID)
+INNER JOIN Bowlers ON Bowlers.BowlerID = Teams.CaptainID
+UNION ALL
+SELECT Tournaments.TourneyLocation, Tournaments.TourneyDate, Tourney_Matches.MatchID, Teams.TeamName,
+Bowlers.BowlerLastName || ' ' || Bowlers.BowlerFirstName AS Captain, 'Even Lane' AS Lane
+FROM ((Tournaments INNER JOIN Tourney_Matches ON Tournaments.TourneyID)
+INNER JOIN Teams ON Teams.TeamID=Tourney_Matches.EvenLaneTeamID)
+INNER JOIN Bowlers ON Bowlers.BowlerID=Teams.CaptainID ORDER BY 2, 3;
+
+SELECT Recipe_Classes.RecipeClassDescription AS IndexName, 'Recipe Classes' AS Type FROM Recipe_Classes
+UNION 
+SELECT Recipes.RecipeTitle, 'Recipe' AS Type FROM Recipes
+UNION
+SELECT Ingredients.IngredientName, 'Ingredient' AS Type FROM Ingredients;
+
+
+
